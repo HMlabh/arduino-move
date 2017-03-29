@@ -36,10 +36,13 @@ unsigned short enable4_2 = 3;
 unsigned short controlInput4_3 = 35;
 unsigned short controlInput4_4 = 43;
 
+uint8_t wheelpwm[8] = { 0 };
+uint8_t mram[16] = { 0 };
+int8_t direction[8] = { 0 };
+
 
 void setup()
 {
-	irrecv.enableIRIn();				//Initialisierung des Pins des IR Empfängers
 
 										//Bestimmung der Pins der Motortreiber als AUsgabe (Output) Pins
 	pinMode(enable1_1, OUTPUT);
@@ -81,14 +84,26 @@ void setup()
 	digitalWrite(enable4_2, LOW);
 }
 
-/*
-Funktionen zum fahren..
-Sie wurden ausgelagert um die Übersichtlichkeit zu gewährleisten.
-Version 1.0
-Stand: November 2016
-Dieser Coder wurde im Rahmen einer Bachelorarbeit an der Hochschule München erstellt.
-Verfasser: Kevin Wayne Wallace
-*/
+//-------Funktionen-------
+
+//stopall
+void stopall()
+{
+	digitalWrite(enable1_1, LOW);
+	digitalWrite(enable1_2, LOW);
+	digitalWrite(enable2_1, LOW);
+	digitalWrite(enable2_2, LOW);
+	digitalWrite(enable3_1, LOW);
+	digitalWrite(enable3_2, LOW);
+	digitalWrite(enable4_1, LOW);
+	digitalWrite(enable4_2, LOW);
+}
+
+//der Direction (1=forward;0=no change;-1=backward)
+void setdir()
+{
+
+}
 
 void VORWAERTS()
 {
@@ -278,17 +293,6 @@ void RECHTS()
 	digitalWrite(enable4_2, HIGH);
 }
 
-void STOPP_SYS()
-{
-	digitalWrite(enable1_1, LOW);
-	digitalWrite(enable1_2, LOW);
-	digitalWrite(enable2_1, LOW);
-	digitalWrite(enable2_2, LOW);
-	digitalWrite(enable3_1, LOW);
-	digitalWrite(enable3_2, LOW);
-	digitalWrite(enable4_1, LOW);
-	digitalWrite(enable4_2, LOW);
-}
 
 
 
