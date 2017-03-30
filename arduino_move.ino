@@ -7,6 +7,8 @@
 *  Verfasser: Kevin Wayne Wallace
 */
 
+//Weiterführung ab April 2017 : Markus Gutekunst
+
 									//////Motortreiber Pin Belegung//////
 unsigned short enable1_1 = 8;				//enablePin MUSS PWM Pin sein
 unsigned short controlInput1_1 = 51;
