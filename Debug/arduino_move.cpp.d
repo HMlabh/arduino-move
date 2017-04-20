@@ -10,4 +10,6 @@ C:\Users\gutek\AppData\Local\Temp\VMBuilds\arduino_move\mega_atmega2560\Debug\ar
  C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino/Printable.h \
  C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino/USBAPI.h \
  C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino/Arduino.h \
- C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\variants\mega/pins_arduino.h
+ C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\variants\mega/pins_arduino.h \
+ C:\Users\gutek\Documents\Arduino\libraries\SoftPWM/SoftPWM_timer.h \
+ C:\Users\gutek\Documents\Arduino\libraries\SoftPWM/SoftPWM.h

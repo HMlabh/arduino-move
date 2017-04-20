@@ -9,8 +9,20 @@
 
 //Weiterführung ab April 2017 : Markus Gutekunst
 
+
+#include <SoftPWM_timer.h>	//Libary for Software-PWM
+#include <SoftPWM.h>		//Libary for Software-PWM
+
+namespace pin
+{
+	uint8_t	enable[8] =		{ 9,		8,	7,	6,	5,	4,	3,2 };
+	uint8_t control_1[8] =	{ 53	,	51,	49,	47,	39,	41,	43,45 };
+	uint8_t control_2[8] =	{ 23	,	25,	27,	29,	31,	33,	35,37 };
+}
+
 									//////Motortreiber Pin Belegung//////
-unsigned short enable1_1 = 8;				//enablePin MUSS PWM Pin sein
+/*
+unsigned short enable1_1 = 8;
 unsigned short controlInput1_1 = 51;
 unsigned short controlInput1_2 = 25;
 unsigned short enable1_2 = 9;
@@ -37,6 +49,7 @@ unsigned short controlInput4_2 = 37;
 unsigned short enable4_2 = 3;
 unsigned short controlInput4_3 = 35;
 unsigned short controlInput4_4 = 43;
+*/
 
 uint8_t wheelpwm[8] = { 0 };
 uint8_t mram[16] = { 0 };
@@ -46,259 +59,70 @@ int8_t direction[8] = { 0 };
 void setup()
 {
 
-										//Bestimmung der Pins der Motortreiber als AUsgabe (Output) Pins
-	pinMode(enable1_1, OUTPUT);
-	pinMode(controlInput1_1, OUTPUT);
-	pinMode(controlInput1_2, OUTPUT);
-	pinMode(enable1_2, OUTPUT);
-	pinMode(controlInput1_3, OUTPUT);
-	pinMode(controlInput1_4, OUTPUT);
-
-	pinMode(enable2_1, OUTPUT);
-	pinMode(controlInput2_1, OUTPUT);
-	pinMode(controlInput2_2, OUTPUT);
-	pinMode(enable2_2, OUTPUT);
-	pinMode(controlInput2_3, OUTPUT);
-	pinMode(controlInput2_4, OUTPUT);
-
-	pinMode(enable3_1, OUTPUT);
-	pinMode(controlInput3_1, OUTPUT);
-	pinMode(controlInput3_2, OUTPUT);
-	pinMode(enable3_2, OUTPUT);
-	pinMode(controlInput3_3, OUTPUT);
-	pinMode(controlInput3_4, OUTPUT);
-
-	pinMode(enable4_1, OUTPUT);
-	pinMode(controlInput4_1, OUTPUT);
-	pinMode(controlInput4_2, OUTPUT);
-	pinMode(enable4_2, OUTPUT);
-	pinMode(controlInput4_3, OUTPUT);
-	pinMode(controlInput4_4, OUTPUT);
+	//Bestimmung der Pins der Motortreiber als AUsgabe (Output) Pins
+	for (int i = 0; i < 8; i++)
+	{
+		pinMode(pin::enable[i], OUTPUT);
+		pinMode(pin::control_1[i], OUTPUT);
+		pinMode(pin::control_2[i], OUTPUT);
+	}
 
 	//enable Pins werden auf LOW gesetzt um unwillkürliches Starten der DC-Motoren zu vermeiden
-	digitalWrite(enable1_1, LOW);
-	digitalWrite(enable1_2, LOW);
-	digitalWrite(enable2_1, LOW);
-	digitalWrite(enable2_2, LOW);
-	digitalWrite(enable3_1, LOW);
-	digitalWrite(enable3_2, LOW);
-	digitalWrite(enable4_1, LOW);
-	digitalWrite(enable4_2, LOW);
+	for (int i = 0; i < 8; i++)
+	{
+		digitalWrite(pin::enable[i], HIGH);
+	}
+
+	SoftPWMBegin();
+
+
+
 }
 
 //-------Funktionen-------
+void testit()
+{
+	//DC-Motorpaar 1 - Links
+	/*
+	SoftPWMSet(controlInput1_1, 0);
+	SoftPWMSet(controlInput1_2, 255);
+	digitalWrite(enable1_1, HIGH);
+	*/
+
+	SoftPWMSet(pin::control_1[7], 0);
+	SoftPWMSet(pin::control_2[7], 255);
+
+
+	delay(2000);
+
+	
+}
+
 
 //stopall
 void stopall()
 {
-	digitalWrite(enable1_1, LOW);
-	digitalWrite(enable1_2, LOW);
-	digitalWrite(enable2_1, LOW);
-	digitalWrite(enable2_2, LOW);
-	digitalWrite(enable3_1, LOW);
-	digitalWrite(enable3_2, LOW);
-	digitalWrite(enable4_1, LOW);
-	digitalWrite(enable4_2, LOW);
+	for (int i = 0; i < 8; i++)
+	{
+		pinMode(pin::enable[i], LOW);
+	}
 }
 
-//der Direction (1=forward;0=no change;-1=backward)
-void setdir()
+//set speed of a mecanum wheel
+void setspeed(int8_t wheelnumber, uint8_t wheelpwmfactor, int8_t wheeldirection)
 {
+	if (wheeldirection = 1)//forward
+	{
 
+	}
 }
 
-void VORWAERTS()
-{
-	/////////////////////////////////////////////
-	//DC-Motorpaar 1 - Links
-	digitalWrite(controlInput1_1, LOW);
-	digitalWrite(controlInput1_2, HIGH);
-	digitalWrite(enable1_1, HIGH);
 
-	//DC-Motorpaar 2 - Rechts
-	digitalWrite(controlInput1_3, LOW);
-	digitalWrite(controlInput1_4, HIGH);
-	digitalWrite(enable1_2, HIGH);
-
-	/////////////////////////////////////////////
-	//DC-Motorpaar 2 - Links
-	digitalWrite(controlInput2_1, HIGH);
-	digitalWrite(controlInput2_2, LOW);
-	digitalWrite(enable2_1, HIGH);
-
-	//DC-Motorpaar 2 - Rechts
-	digitalWrite(controlInput2_3, HIGH);
-	digitalWrite(controlInput2_4, LOW);
-	digitalWrite(enable2_2, HIGH);
-
-	/////////////////////////////////////////////
-	//DC-Motorpaar 3 - Links
-	digitalWrite(controlInput3_1, HIGH);
-	digitalWrite(controlInput3_2, LOW);
-	digitalWrite(enable3_1, HIGH);
-
-	//DC-Motorpaar 3 - Rechts
-	digitalWrite(controlInput3_3, HIGH);
-	digitalWrite(controlInput3_4, LOW);
-	digitalWrite(enable3_2, HIGH);
-
-	/////////////////////////////////////////////
-	//DC-Motorpaar 4 - Links
-	digitalWrite(controlInput4_1, HIGH);
-	digitalWrite(controlInput4_2, LOW);
-	digitalWrite(enable4_1, HIGH);
-
-	//DC-Motorpaar 4 - Rechts
-	digitalWrite(controlInput4_3, HIGH);
-	digitalWrite(controlInput4_4, LOW);
-	digitalWrite(enable4_2, HIGH);
-}
-
-void RUCKWARTS()									//U=Ü und A=Ä, Umlaute werden nicht erkannt
-{
-	/////////////////////////////////////////////
-	//DC-Motorpaar 1 - Links
-	digitalWrite(controlInput1_1, HIGH);
-	digitalWrite(controlInput1_2, LOW);
-	digitalWrite(enable1_1, HIGH);
-
-	//DC-Motorpaar 1 - Rechts
-	digitalWrite(controlInput1_3, HIGH);
-	digitalWrite(controlInput1_4, LOW);
-	digitalWrite(enable1_2, HIGH);
-
-	/////////////////////////////////////////////
-	//DC-Motorpaar 2 - Links
-	digitalWrite(controlInput2_1, LOW);
-	digitalWrite(controlInput2_2, HIGH);
-	digitalWrite(enable2_1, HIGH);
-
-	//DC-Motorpaar 2 - Rechts
-	digitalWrite(controlInput2_3, LOW);
-	digitalWrite(controlInput2_4, HIGH);
-	digitalWrite(enable2_2, HIGH);
-
-	/////////////////////////////////////////////
-	//DC-Motorpaar 3 - Links
-	digitalWrite(controlInput3_1, LOW);
-	digitalWrite(controlInput3_2, HIGH);
-	digitalWrite(enable3_1, HIGH);
-
-	//DC-Motorpaar 3 - Rechts
-	digitalWrite(controlInput3_3, LOW);
-	digitalWrite(controlInput3_4, HIGH);
-	digitalWrite(enable3_2, HIGH);
-
-	/////////////////////////////////////////////
-	//DC-Motorpaar 4 - Links
-	digitalWrite(controlInput4_1, LOW);
-	digitalWrite(controlInput4_2, HIGH);
-	digitalWrite(enable4_1, HIGH);
-
-	//DC-Motorpaar 4 - Rechts
-	digitalWrite(controlInput4_3, LOW);
-	digitalWrite(controlInput4_4, HIGH);
-	digitalWrite(enable4_2, HIGH);
-}
-
-void LINKS()
-{
-	/////////////////////////////////////////////
-	//DC-Motorpaar 1 - Links
-	digitalWrite(controlInput1_1, HIGH);
-	digitalWrite(controlInput1_2, LOW);
-	digitalWrite(enable1_1, HIGH);
-
-	//DC-Motorpaar 1 - Rechts
-	digitalWrite(controlInput1_3, LOW);
-	digitalWrite(controlInput1_4, HIGH);
-	digitalWrite(enable1_2, HIGH);
-
-	/////////////////////////////////////////////
-	//DC-Motorpaar 2 - Links
-	digitalWrite(controlInput2_1, HIGH);
-	digitalWrite(controlInput2_2, LOW);
-	digitalWrite(enable2_1, HIGH);
-
-	//DC-Motorpaar 2 - Rechts
-	digitalWrite(controlInput2_3, LOW);
-	digitalWrite(controlInput2_4, HIGH);
-	digitalWrite(enable2_2, HIGH);
-
-	/////////////////////////////////////////////
-	//DC-Motorpaar 3 - Links
-	digitalWrite(controlInput3_1, HIGH);
-	digitalWrite(controlInput3_2, LOW);
-	digitalWrite(enable3_1, HIGH);
-
-	//DC-Motorpaar 3 - Rechts
-	digitalWrite(controlInput3_3, LOW);
-	digitalWrite(controlInput3_4, HIGH);
-	digitalWrite(enable3_2, HIGH);
-
-	/////////////////////////////////////////////
-	//DC-Motorpaar 4 - Links
-	digitalWrite(controlInput4_1, HIGH);
-	digitalWrite(controlInput4_2, LOW);
-	digitalWrite(enable4_1, HIGH);
-
-	//DC-Motorpaar 4 - Rechts
-	digitalWrite(controlInput4_3, LOW);
-	digitalWrite(controlInput4_4, HIGH);
-	digitalWrite(enable4_2, HIGH);
-}
-
-void RECHTS()
-{
-	/////////////////////////////////////////////
-	//DC-Motorpaar 1 - Links
-	digitalWrite(controlInput1_1, LOW);
-	digitalWrite(controlInput1_2, HIGH);
-	digitalWrite(enable1_1, HIGH);
-
-	//DC-Motorpaar 1 - Rechts
-	digitalWrite(controlInput1_3, HIGH);
-	digitalWrite(controlInput1_4, LOW);
-	digitalWrite(enable1_2, HIGH);
-
-	/////////////////////////////////////////////
-	//DC-Motorpaar 2 - Links
-	digitalWrite(controlInput2_1, LOW);
-	digitalWrite(controlInput2_2, HIGH);
-	digitalWrite(enable2_1, HIGH);
-
-	//DC-Motorpaar 2 - Rechts
-	digitalWrite(controlInput2_3, HIGH);
-	digitalWrite(controlInput2_4, LOW);
-	digitalWrite(enable2_2, HIGH);
-
-	/////////////////////////////////////////////
-	//DC-Motorpaar 3 - Links
-	digitalWrite(controlInput3_1, LOW);
-	digitalWrite(controlInput3_2, HIGH);
-	digitalWrite(enable3_1, HIGH);
-
-	//DC-Motorpaar 3 - Rechts
-	digitalWrite(controlInput3_3, HIGH);
-	digitalWrite(controlInput3_4, LOW);
-	digitalWrite(enable3_2, HIGH);
-
-	/////////////////////////////////////////////
-	//DC-Motorpaar 4 - Links
-	digitalWrite(controlInput4_1, LOW);
-	digitalWrite(controlInput4_2, HIGH);
-	digitalWrite(enable4_1, HIGH);
-
-	//DC-Motorpaar 4 - Rechts
-	digitalWrite(controlInput4_3, HIGH);
-	digitalWrite(controlInput4_4, LOW);
-	digitalWrite(enable4_2, HIGH);
-}
 
 
 
 
 void loop()
 {
-	
+	testit();
 }
