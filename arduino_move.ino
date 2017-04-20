@@ -15,9 +15,9 @@
 
 namespace pin
 {
-	uint8_t	enable[8] =		{ 9,		8,	7,	6,	5,	4,	3,2 };
-	uint8_t control_1[8] =	{ 53	,	51,	49,	47,	39,	41,	43,45 };
-	uint8_t control_2[8] =	{ 23	,	25,	27,	29,	31,	33,	35,37 };
+	uint8_t	enable[8] =		{ 9,		8,	7,	6,	5,	4,	3,	2 };
+	uint8_t control_1[8] =	{ 23	,	25,	27,	29,	31,	33,	35,	37 };
+	uint8_t control_2[8] =	{ 53	,	51,	49,	47,	39,	41,	43,	45 };
 }
 
 									//////Motortreiber Pin Belegung//////
@@ -82,18 +82,33 @@ void setup()
 //-------Funktionen-------
 void testit()
 {
-	//DC-Motorpaar 1 - Links
 	/*
-	SoftPWMSet(controlInput1_1, 0);
-	SoftPWMSet(controlInput1_2, 255);
-	digitalWrite(enable1_1, HIGH);
+	for (int n = 0; n < 255; n++)
+	{
+		for (int i = 0; i < 8; i++)
+		{
+			SoftPWMSet(pin::control_1[i], n);
+			SoftPWMSet(pin::control_2[i], 0);
+		}
+	delay(10);
+	}
+	for (int n = 255; n >0; n--)
+	{
+		for (int i = 0; i < 8; i++)
+		{
+			SoftPWMSet(pin::control_1[i], n);
+			SoftPWMSet(pin::control_2[i], 0);
+		}
+		delay(10);
+	}
 	*/
-
-	SoftPWMSet(pin::control_1[7], 0);
-	SoftPWMSet(pin::control_2[7], 255);
-
-
+	for (int i = 0; i < 8; i++)
+	{
+		SoftPWMSet(pin::control_1[i], 0);
+		SoftPWMSet(pin::control_2[i], 0);
+	}
 	delay(2000);
+
 
 	
 }
