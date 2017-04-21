@@ -51,9 +51,9 @@ unsigned short controlInput4_3 = 35;
 unsigned short controlInput4_4 = 43;
 */
 
-uint8_t wheelpwm[8] = { 0 };
+int16_t wheelpwm[8] = { 0 };
 uint8_t mram[16] = { 0 };
-int8_t direction[8] = { 0 };
+
 
 
 void setup()
@@ -124,11 +124,24 @@ void stopall()
 }
 
 //set speed of a mecanum wheel
-void setspeed(int8_t wheelnumber, uint8_t wheelpwmfactor, int8_t wheeldirection)
+void setspeed(int8_t wheelnumber, int16_t pwmfactor)
 {
-	if (wheeldirection = 1)//forward
+	if (pwmfactor = 0)		//stop
 	{
-
+		SoftPWMSet(pin::control_1[wheelnumber], 0);
+		SoftPWMSet(pin::control_2[wheelnumber], 0);
+	}
+	else if (pwmfactor > 0)	//forward
+	{
+		uint8_t pwm = pwmfactor;
+		SoftPWMSet(pin::control_1[wheelnumber], pwm);
+		SoftPWMSet(pin::control_2[wheelnumber], 0);
+	}
+	else if (pwmfactor < 0)	//backward
+	{
+		uint8_t pwm = -pwmfactor;
+		SoftPWMSet(pin::control_1[wheelnumber], 0);
+		SoftPWMSet(pin::control_2[wheelnumber], pwm);
 	}
 }
 
