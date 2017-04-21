@@ -119,7 +119,8 @@ void stopall()
 {
 	for (int i = 0; i < 8; i++)
 	{
-		pinMode(pin::enable[i], LOW);
+		SoftPWMSet(pin::control_1[i], 0);
+		SoftPWMSet(pin::control_2[i], 0);
 	}
 }
 
