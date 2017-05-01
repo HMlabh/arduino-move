@@ -16,7 +16,11 @@
 #ifdef IRRemote
 #include <IRremote.h>        //Eingliederung der IR Bibliothek 
 
+int16_t pwmspeed = 200;
+
 unsigned short receiver = A0;       //Das digitale Signal wird vom angegebenen Pin abgegriffen 
+
+
 
 IRrecv irrecv(receiver);      //Definierung des Objekts welches die Signale der Fernbedienung ausliest 
 
@@ -172,26 +176,58 @@ void irremote()
 		{
 			
 		case 16712445:	//Taste: Pfeil Hoch 
-			setspeed(0, 255);
-			setspeed(1, 255);
-			setspeed(2, 255);
-			setspeed(3, 255);
-			setspeed(4, 255);
-			setspeed(5, 255);
-			setspeed(6, 255);
-			setspeed(7, 255);
+			setspeed(0, pwmspeed);
+			setspeed(1, pwmspeed);
+			setspeed(2, pwmspeed);
+			setspeed(3, pwmspeed);
+
+			setspeed(4, pwmspeed);
+			setspeed(5, pwmspeed);
+			setspeed(6, pwmspeed);
+			setspeed(7, pwmspeed);
 			break;    
 		case 16750695:	//Taste: Pfeil Runter 
-			 
+			setspeed(0, -pwmspeed);
+			setspeed(1, -pwmspeed);
+			setspeed(2, -pwmspeed);
+			setspeed(3, -pwmspeed);
+
+			setspeed(4, -pwmspeed);
+			setspeed(5, -pwmspeed);
+			setspeed(6, -pwmspeed);
+			setspeed(7, -pwmspeed);
 			break;    
 		case 16769055:	//Taste: Peil Links 
-			
+			setspeed(0, pwmspeed);
+			setspeed(1, pwmspeed);
+			setspeed(2, pwmspeed);
+			setspeed(3, pwmspeed);
+
+			setspeed(4, -pwmspeed);
+			setspeed(5, -pwmspeed);
+			setspeed(6, -pwmspeed);
+			setspeed(7, -pwmspeed);
 			break;      
 		case 16748655:  //Taste: Pfeil Rechts 
-			 
+			setspeed(0, -pwmspeed);
+			setspeed(1, -pwmspeed);
+			setspeed(2, -pwmspeed);
+			setspeed(3, -pwmspeed);
+
+			setspeed(4, pwmspeed);
+			setspeed(5, pwmspeed);
+			setspeed(6, pwmspeed);
+			setspeed(7, pwmspeed);
 			break;    
 		case 16754775:  //Taste: Zahnrad 
-			
+			setspeed(0, 0);
+			setspeed(1, 0);
+			setspeed(2, 0);
+			setspeed(3, 0);
+			setspeed(4, 0);
+			setspeed(5, 0);
+			setspeed(6, 0);
+			setspeed(7, 0);
 			break;    
 			
 		}
