@@ -170,15 +170,32 @@ void irremote()
 	{
 		switch (results.value)          //Switch Case Anweisung um die verschiedenen Motoren anzusteuern. 
 		{
-			/*
-		case 16712445:  VORWAERTS(); break;    //Taste: Pfeil Hoch 
-		case 16750695:  RUCKWARTS(); break;    //Taste: Pfeil Runter 
-		case 16769055:  LINKS(); break;      //Taste: Peil Links 
-		case 16748655:  RECHTS(); break;    //Taste: Pfeil Rechts 
-		case 16754775:  STOPP_SYS(); break;    //Taste: Zahnrad 
-			*/
+			
+		case 16712445:	//Taste: Pfeil Hoch 
+			setspeed(0, 255);
+			setspeed(1, 255);
+			setspeed(2, 255);
+			setspeed(3, 255);
+			setspeed(4, 255);
+			setspeed(5, 255);
+			setspeed(6, 255);
+			setspeed(7, 255);
+			break;    
+		case 16750695:	//Taste: Pfeil Runter 
+			 
+			break;    
+		case 16769055:	//Taste: Peil Links 
+			
+			break;      
+		case 16748655:  //Taste: Pfeil Rechts 
+			 
+			break;    
+		case 16754775:  //Taste: Zahnrad 
+			
+			break;    
+			
 		}
-		irrecv.resume();            //Neustart des Receivers 
+		irrecv.resume();    //Neustart des Receivers 
 	}
 }
 #endif // IRRemote
