@@ -207,4 +207,11 @@ void irremote()
 void loop()
 {
 	testit();
+
+
+#ifdef IRRemote
+	irremote();
+
+#endif // IRRemote
+
 }
