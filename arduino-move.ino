@@ -1,7 +1,7 @@
 /*
 *  Ansteuerung des Hubsystems
 *  Dies ist der Ansteuerungscode für die Schrittmotoren, welche den Hub des Prototyps übernehmen.
-*  Version 1.1
+*  Version 1.1b
 *  Stand: November 2016
 *  Dieser Code wurde im Rahmen einer Bachelorarbeit an der Hochschule München erstellt.
 *  Verfasser: Kevin Wayne Wallace
