@@ -16,11 +16,9 @@
 #ifdef IRRemote
 #include <IRremote.h>        //Eingliederung der IR Bibliothek 
 
-int16_t pwmspeed = 200;
+int16_t pwmspeed = 100;
 
 unsigned short receiver = A0;       //Das digitale Signal wird vom angegebenen Pin abgegriffen 
-
-
 
 IRrecv irrecv(receiver);      //Definierung des Objekts welches die Signale der Fernbedienung ausliest 
 
@@ -29,7 +27,7 @@ decode_results results;        //Ergebnisse werden decodiert und unter "results"
 
 
 namespace pin
-{
+{////////////////Motor--------1-----2---3---4---5---6---7---8
 	uint8_t	enable[8] =		{ 9,		8,	7,	6,	5,	4,	3,	2 };
 	uint8_t control_1[8] =	{ 23	,	25,	27,	29,	31,	33,	35,	37 };
 	uint8_t control_2[8] =	{ 53	,	51,	49,	47,	39,	41,	43,	45 };
@@ -242,8 +240,7 @@ void irremote()
 
 void loop()
 {
-	testit();
-
+	//testit();
 
 #ifdef IRRemote
 	irremote();
