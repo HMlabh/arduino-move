@@ -15,12 +15,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="arduino_move.ino" />
+    <None Include="arduino-move.ino" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="__vm\.arduino_move.vsarduino.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="__vm\.arduino-move.vsarduino.h">
       <Filter>Header Files</Filter>
     </ClInclude>

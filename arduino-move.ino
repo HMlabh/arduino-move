@@ -1,20 +1,26 @@
 /*
 *  Ansteuerung des Hubsystems
 *  Dies ist der Ansteuerungscode für die Schrittmotoren, welche den Hub des Prototyps übernehmen.
-*  Version 1.0
+*  Version 1.1
 *  Stand: November 2016
 *  Dieser Code wurde im Rahmen einer Bachelorarbeit an der Hochschule München erstellt.
 *  Verfasser: Kevin Wayne Wallace
 */
 
 //Weiterführung ab April 2017 : Markus Gutekunst
-//#define IRRemote
+#define IRRemote
 
 #include <SoftPWM_timer.h>	//Libary for Software-PWM
 #include <SoftPWM.h>		//Libary for Software-PWM
 
 #ifdef IRRemote
+#include <IRremote.h>        //Eingliederung der IR Bibliothek 
 
+unsigned short receiver = A0;       //Das digitale Signal wird vom angegebenen Pin abgegriffen 
+
+IRrecv irrecv(receiver);      //Definierung des Objekts welches die Signale der Fernbedienung ausliest 
+
+decode_results results;        //Ergebnisse werden decodiert und unter "results" abgespeichert 
 #endif // IRRemote
 
 
@@ -77,6 +83,12 @@ void setup()
 	{
 		digitalWrite(pin::enable[i], HIGH);
 	}
+
+
+#ifdef IRRemote
+	irrecv.enableIRIn();        //Initialisierung des Pins des IR Empfängers 
+#endif // IRRemote
+
 
 	SoftPWMBegin();
 
@@ -151,6 +163,25 @@ void setspeed(int8_t wheelnumber, int16_t pwmfactor)
 	}
 }
 
+#ifdef IRRemote
+void irremote()
+{
+	if (irrecv.decode(&results))
+	{
+		switch (results.value)          //Switch Case Anweisung um die verschiedenen Motoren anzusteuern. 
+		{
+			/*
+		case 16712445:  VORWAERTS(); break;    //Taste: Pfeil Hoch 
+		case 16750695:  RUCKWARTS(); break;    //Taste: Pfeil Runter 
+		case 16769055:  LINKS(); break;      //Taste: Peil Links 
+		case 16748655:  RECHTS(); break;    //Taste: Pfeil Rechts 
+		case 16754775:  STOPP_SYS(); break;    //Taste: Zahnrad 
+			*/
+		}
+		irrecv.resume();            //Neustart des Receivers 
+	}
+}
+#endif // IRRemote
 
 
 
