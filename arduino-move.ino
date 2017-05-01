@@ -1,7 +1,7 @@
 /*
 *  Ansteuerung des Hubsystems
 *  Dies ist der Ansteuerungscode für die Schrittmotoren, welche den Hub des Prototyps übernehmen.
-*  Version 1.1
+*  Version 1.1b
 *  Stand: November 2016
 *  Dieser Code wurde im Rahmen einer Bachelorarbeit an der Hochschule München erstellt.
 *  Verfasser: Kevin Wayne Wallace
@@ -16,6 +16,8 @@
 #ifdef IRRemote
 #include <IRremote.h>        //Eingliederung der IR Bibliothek 
 
+int16_t pwmspeed = 100;
+
 unsigned short receiver = A0;       //Das digitale Signal wird vom angegebenen Pin abgegriffen 
 
 IRrecv irrecv(receiver);      //Definierung des Objekts welches die Signale der Fernbedienung ausliest 
@@ -25,7 +27,7 @@ decode_results results;        //Ergebnisse werden decodiert und unter "results"
 
 
 namespace pin
-{
+{////////////////Motor--------1-----2---3---4---5---6---7---8
 	uint8_t	enable[8] =		{ 9,		8,	7,	6,	5,	4,	3,	2 };
 	uint8_t control_1[8] =	{ 23	,	25,	27,	29,	31,	33,	35,	37 };
 	uint8_t control_2[8] =	{ 53	,	51,	49,	47,	39,	41,	43,	45 };
@@ -144,7 +146,7 @@ void stopall()
 //set speed of a mecanum wheel
 void setspeed(int8_t wheelnumber, int16_t pwmfactor)
 {
-	if (pwmfactor = 0)		//stop
+	if (pwmfactor == 0)		//stop
 	{
 		SoftPWMSet(pin::control_1[wheelnumber], 0);
 		SoftPWMSet(pin::control_2[wheelnumber], 0);
@@ -170,15 +172,64 @@ void irremote()
 	{
 		switch (results.value)          //Switch Case Anweisung um die verschiedenen Motoren anzusteuern. 
 		{
-			/*
-		case 16712445:  VORWAERTS(); break;    //Taste: Pfeil Hoch 
-		case 16750695:  RUCKWARTS(); break;    //Taste: Pfeil Runter 
-		case 16769055:  LINKS(); break;      //Taste: Peil Links 
-		case 16748655:  RECHTS(); break;    //Taste: Pfeil Rechts 
-		case 16754775:  STOPP_SYS(); break;    //Taste: Zahnrad 
-			*/
+			
+		case 16712445:	//Taste: Pfeil Hoch 
+			setspeed(0, pwmspeed);
+			setspeed(1, pwmspeed);
+			setspeed(2, pwmspeed);
+			setspeed(3, pwmspeed);
+
+			setspeed(4, pwmspeed);
+			setspeed(5, pwmspeed);
+			setspeed(6, pwmspeed);
+			setspeed(7, pwmspeed);
+			break;    
+		case 16750695:	//Taste: Pfeil Runter 
+			setspeed(0, -pwmspeed);
+			setspeed(1, -pwmspeed);
+			setspeed(2, -pwmspeed);
+			setspeed(3, -pwmspeed);
+
+			setspeed(4, -pwmspeed);
+			setspeed(5, -pwmspeed);
+			setspeed(6, -pwmspeed);
+			setspeed(7, -pwmspeed);
+			break;    
+		case 16769055:	//Taste: Peil Links 
+			setspeed(0, pwmspeed);
+			setspeed(1, pwmspeed);
+			setspeed(2, pwmspeed);
+			setspeed(3, pwmspeed);
+
+			setspeed(4, -pwmspeed);
+			setspeed(5, -pwmspeed);
+			setspeed(6, -pwmspeed);
+			setspeed(7, -pwmspeed);
+			break;      
+		case 16748655:  //Taste: Pfeil Rechts 
+			setspeed(0, -pwmspeed);
+			setspeed(1, -pwmspeed);
+			setspeed(2, -pwmspeed);
+			setspeed(3, -pwmspeed);
+
+			setspeed(4, pwmspeed);
+			setspeed(5, pwmspeed);
+			setspeed(6, pwmspeed);
+			setspeed(7, pwmspeed);
+			break;    
+		case 16754775:  //Taste: Zahnrad 
+			setspeed(0, 0);
+			setspeed(1, 0);
+			setspeed(2, 0);
+			setspeed(3, 0);
+			setspeed(4, 0);
+			setspeed(5, 0);
+			setspeed(6, 0);
+			setspeed(7, 0);
+			break;    
+			
 		}
-		irrecv.resume();            //Neustart des Receivers 
+		irrecv.resume();    //Neustart des Receivers 
 	}
 }
 #endif // IRRemote
@@ -189,5 +240,11 @@ void irremote()
 
 void loop()
 {
-	testit();
+	//testit();
+
+#ifdef IRRemote
+	irremote();
+
+#endif // IRRemote
+
 }
