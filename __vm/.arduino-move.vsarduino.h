@@ -64,5 +64,5 @@ typedef void *__builtin_va_list;
 #define F(string_literal) ((const PROGMEM char *)(string_literal))
 #undef PSTR
 #define PSTR(string_literal) ((const PROGMEM char *)(string_literal))
-#include "arduino_move.ino"
+#include "arduino-move.ino"
 #endif
