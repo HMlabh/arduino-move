@@ -148,7 +148,7 @@ void stopall()
 //set speed of a mecanum wheel
 void setspeed(int8_t wheelnumber, int16_t pwmfactor)
 {
-	if (pwmfactor = 0)		//stop
+	if (pwmfactor == 0)		//stop
 	{
 		SoftPWMSet(pin::control_1[wheelnumber], 0);
 		SoftPWMSet(pin::control_2[wheelnumber], 0);
