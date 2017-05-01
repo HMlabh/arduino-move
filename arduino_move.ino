@@ -8,10 +8,15 @@
 */
 
 //Weiterführung ab April 2017 : Markus Gutekunst
-
+//#define IRRemote
 
 #include <SoftPWM_timer.h>	//Libary for Software-PWM
 #include <SoftPWM.h>		//Libary for Software-PWM
+
+#ifdef IRRemote
+
+#endif // IRRemote
+
 
 namespace pin
 {
