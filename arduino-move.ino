@@ -67,7 +67,7 @@ namespace pin
 	uint8_t m7_in1	= 38;	//Steuertung der Drehrichtung
 
 	//Enable Vector	------------MT1-----MT2-----MT3-----MT4---
-	uint8_t	enable[4] =		{ m01_en, m01_en, m01_en, m01_en};
+	uint8_t	enable[4] =		{ m01_en, m23_en, m45_en, m67_en};
 
 	//Control Verctor Motor:------0-------1-------2-------3-------4-------5-------6-------7
 	uint8_t feedback[8] =	{	m0_fb,	m1_fb,	m2_fb,	m3_fb,	m4_fb,	m5_fb,	m6_fb,	m7_fb  };
@@ -83,7 +83,31 @@ namespace pin
 void setup()
 {
 
-	
+	//-----IO----------
+
+	// Motortreiber deaktiviert
+	for (int i = 0; i <= 3; i++)
+	{
+		digitalWrite(pin::enable[i], LOW);
+		pinMode(pin::enable[i], OUTPUT);
+	}
+
+	//restliche IO-Pins einstellen
+	for (int i = 0; i <= 7; i++)
+	{
+		//Feedback <-- Input
+		pinMode(pin::feedback[i], INPUT);
+		//Status <-- Input
+		pinMode(pin::status[i], INPUT);
+		//PWM <-- 0%
+		analogWrite(pin::pwm[i], 0);
+		//Direction <-- Output, LOW
+		digitalWrite(pin::dir2[i], LOW);
+		pinMode(pin::dir2[i], OUTPUT);
+		digitalWrite(pin::dir1[i], LOW);
+		pinMode(pin::dir1[i], OUTPUT);
+
+	}
 
 
 }
@@ -91,8 +115,30 @@ void setup()
 //-------Funktionen-------
 void testit()
 {
-	
 
+	//Aktiviere alle Treiber
+	for (int i = 0; i <= 3; i++)
+	{
+		enabledriver(i);
+	}
+	
+	digitalWrite(pin::enable[1], HIGH);
+	int test = 0;
+	
+	while (1)
+	{
+		
+		setspeed(test, 255);
+		delay(2000);
+		setspeed(test, 0);
+		delay(2000);
+		setspeed(test, -255);
+		delay(2000);
+		setspeed(test, 0);
+		delay(2000);
+		
+	}
+	
 
 	
 }
@@ -107,12 +153,53 @@ void stopall()
 //set speed of a mecanum wheel
 void setspeed(int8_t wheelnumber, int16_t pwmfactor)
 {
-	
+	if (wheelnumber < 8)
+	{
+		if (pwmfactor<0 && pwmfactor >= -255)
+		{
+			digitalWrite(pin::dir1[wheelnumber], HIGH);
+			digitalWrite(pin::dir2[wheelnumber], LOW);
+			analogWrite(pin::pwm[wheelnumber], -pwmfactor);
+		}
+		
+		else if (pwmfactor>0 && pwmfactor <= 255)
+		{
+			digitalWrite(pin::dir1[wheelnumber], LOW);
+			digitalWrite(pin::dir2[wheelnumber], HIGH);
+			analogWrite(pin::pwm[wheelnumber], pwmfactor);
+		}
+		
+		else
+		{
+			digitalWrite(pin::dir1[wheelnumber], LOW);
+			digitalWrite(pin::dir2[wheelnumber], LOW);
+			analogWrite(pin::pwm[wheelnumber], 0);
+		}
+	}
+	else{}
 }
 
+//enabledriver
+void enabledriver(int8_t driver)
+{
+	if (driver <4)
+	{
+		digitalWrite(pin::enable[driver], HIGH);
+	}
+	else{}
+}
 
+//getstatus
+void getstatus(int8_t wheelnumber)
+{
 
+}
 
+//getcurrent
+void getcurrent(int8_t wheelnumber)
+{
+
+}
 
 
 
