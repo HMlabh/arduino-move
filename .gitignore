@@ -1,0 +1,14 @@
+
+\.vs/arduino-move/v15/\.suo
+
+Debug/arduino-move\.cpp\.d
+
+*.o
+
+*.elf
+
+*.hex
+
+*.buildinfo
+
+Debug/core\.a
