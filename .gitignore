@@ -12,3 +12,5 @@ Debug/arduino-move\.cpp\.d
 *.buildinfo
 
 Debug/core\.a
+
+*.xml
