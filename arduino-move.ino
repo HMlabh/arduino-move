@@ -122,17 +122,20 @@ void testit()
 		enabledriver(i);
 	}
 	
-	digitalWrite(pin::enable[1], HIGH);
 	int test = 0;
 	
 	while (1)
 	{
 		
-		setspeed(test, 255);
+		//setspeed(test, 255);
+		setramp(0, 60, 255, 20);
+		setramp(0, 255, 60, 20);
 		delay(2000);
 		setspeed(test, 0);
 		delay(2000);
-		setspeed(test, -255);
+		//setspeed(test, -255);
+		setramp(0, -60, -255, 20);
+		setramp(0, -255, -60, 20);
 		delay(2000);
 		setspeed(test, 0);
 		delay(2000);
@@ -155,20 +158,21 @@ void setspeed(int8_t wheelnumber, int16_t pwmfactor)
 {
 	if (wheelnumber < 8)
 	{
-		if (pwmfactor<0 && pwmfactor >= -255)
-		{
-			digitalWrite(pin::dir1[wheelnumber], HIGH);
-			digitalWrite(pin::dir2[wheelnumber], LOW);
-			analogWrite(pin::pwm[wheelnumber], -pwmfactor);
-		}
-		
-		else if (pwmfactor>0 && pwmfactor <= 255)
+		//vorwärts
+		if (pwmfactor>0 && pwmfactor <= 255)
 		{
 			digitalWrite(pin::dir1[wheelnumber], LOW);
 			digitalWrite(pin::dir2[wheelnumber], HIGH);
 			analogWrite(pin::pwm[wheelnumber], pwmfactor);
 		}
-		
+		//rückwärts
+		else if (pwmfactor<0 && pwmfactor >= -255)
+		{
+			digitalWrite(pin::dir1[wheelnumber], HIGH);
+			digitalWrite(pin::dir2[wheelnumber], LOW);
+			analogWrite(pin::pwm[wheelnumber], -pwmfactor);
+		}
+		//stop
 		else
 		{
 			digitalWrite(pin::dir1[wheelnumber], LOW);
@@ -178,6 +182,71 @@ void setspeed(int8_t wheelnumber, int16_t pwmfactor)
 	}
 	else{}
 }
+
+//rampup
+void setramp(int8_t wheelnumber, int16_t pwmfactor_beginn, int16_t pwmfactor_end, int16_t rampdelay)
+{
+	//Plausibilitätscheck
+	if (wheelnumber >= 0 && wheelnumber < 8 && -256 < pwmfactor_beginn < 256 && -256 < pwmfactor_end < 256 && rampdelay>0)
+	{
+		//vorwärts
+		if (pwmfactor_end >= 0 && pwmfactor_beginn>=0)
+		{
+			//hochrampen
+			if (pwmfactor_beginn < pwmfactor_end)
+			{
+				for (int16_t i = pwmfactor_beginn; i <= pwmfactor_end; i++)
+				{
+					digitalWrite(pin::dir1[wheelnumber], LOW);
+					digitalWrite(pin::dir2[wheelnumber], HIGH);
+					analogWrite(pin::pwm[wheelnumber], i);
+					delay(rampdelay);
+				}
+			}
+			//abrampen
+			if (pwmfactor_beginn > pwmfactor_end)
+			{
+				for (int16_t i = pwmfactor_beginn; i >= pwmfactor_end; i--)
+				{
+					digitalWrite(pin::dir1[wheelnumber], LOW);
+					digitalWrite(pin::dir2[wheelnumber], HIGH);
+					analogWrite(pin::pwm[wheelnumber], i);
+					delay(rampdelay);
+				}
+			}
+
+		}
+		//rückwärts
+		else if (pwmfactor_end <= 0 && pwmfactor_beginn <= 0)
+		{
+			//hochrampen
+			if (pwmfactor_beginn > pwmfactor_end)
+			{
+				for (int16_t i = -pwmfactor_beginn; i <= -pwmfactor_end; i++)
+				{
+					digitalWrite(pin::dir1[wheelnumber], HIGH);
+					digitalWrite(pin::dir2[wheelnumber], LOW);
+					analogWrite(pin::pwm[wheelnumber], i);
+					delay(rampdelay);
+				}
+			}
+			//abrampen
+			if (pwmfactor_beginn < pwmfactor_end)
+			{
+				for (int16_t i = -pwmfactor_beginn; i >= -pwmfactor_end; i--)
+				{
+					digitalWrite(pin::dir1[wheelnumber], HIGH);
+					digitalWrite(pin::dir2[wheelnumber], LOW);
+					analogWrite(pin::pwm[wheelnumber], i);
+					delay(rampdelay);
+				}
+			}
+		}
+		else{}
+	}
+	else{}
+}
+
 
 //enabledriver
 void enabledriver(int8_t driver)
