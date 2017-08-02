@@ -78,12 +78,14 @@ namespace pin
 
 }
 
+uint8_t status[8] = { 0 };
 
 
 void setup()
 {
 
 	//-----IO----------
+
 
 	// Motortreiber deaktiviert
 	for (int i = 0; i <= 3; i++)
@@ -115,7 +117,6 @@ void setup()
 //-------Funktionen-------
 void testit()
 {
-
 	//Aktiviere alle Treiber
 	for (int i = 0; i <= 3; i++)
 	{
@@ -126,19 +127,15 @@ void testit()
 	
 	while (1)
 	{
+		setramp(1, 20, 255, 5);
+		delay(1000);
+		setramp(1, 255, 20, 5);
+
+		setramp(1, -20, -255, 5);
+		setramp(1, -255, -20, 5);
 		
-		//setspeed(test, 255);
-		setramp(0, 60, 255, 20);
-		setramp(0, 255, 60, 20);
-		delay(2000);
-		setspeed(test, 0);
-		delay(2000);
-		//setspeed(test, -255);
-		setramp(0, -60, -255, 20);
-		setramp(0, -255, -60, 20);
-		delay(2000);
-		setspeed(test, 0);
-		delay(2000);
+		
+		delay(1000);
 		
 	}
 	
@@ -195,25 +192,26 @@ void setramp(int8_t wheelnumber, int16_t pwmfactor_beginn, int16_t pwmfactor_end
 			//hochrampen
 			if (pwmfactor_beginn < pwmfactor_end)
 			{
+				digitalWrite(pin::dir1[wheelnumber], LOW);
+				digitalWrite(pin::dir2[wheelnumber], HIGH);
 				for (int16_t i = pwmfactor_beginn; i <= pwmfactor_end; i++)
 				{
-					digitalWrite(pin::dir1[wheelnumber], LOW);
-					digitalWrite(pin::dir2[wheelnumber], HIGH);
 					analogWrite(pin::pwm[wheelnumber], i);
 					delay(rampdelay);
 				}
 			}
 			//abrampen
-			if (pwmfactor_beginn > pwmfactor_end)
+			else if (pwmfactor_beginn > pwmfactor_end)
 			{
+				digitalWrite(pin::dir1[wheelnumber], LOW);
+				digitalWrite(pin::dir2[wheelnumber], HIGH);
 				for (int16_t i = pwmfactor_beginn; i >= pwmfactor_end; i--)
 				{
-					digitalWrite(pin::dir1[wheelnumber], LOW);
-					digitalWrite(pin::dir2[wheelnumber], HIGH);
 					analogWrite(pin::pwm[wheelnumber], i);
 					delay(rampdelay);
 				}
 			}
+			else{}
 
 		}
 		//rückwärts
@@ -222,29 +220,30 @@ void setramp(int8_t wheelnumber, int16_t pwmfactor_beginn, int16_t pwmfactor_end
 			//hochrampen
 			if (pwmfactor_beginn > pwmfactor_end)
 			{
+				digitalWrite(pin::dir1[wheelnumber], HIGH);
+				digitalWrite(pin::dir2[wheelnumber], LOW);
 				for (int16_t i = -pwmfactor_beginn; i <= -pwmfactor_end; i++)
 				{
-					digitalWrite(pin::dir1[wheelnumber], HIGH);
-					digitalWrite(pin::dir2[wheelnumber], LOW);
 					analogWrite(pin::pwm[wheelnumber], i);
 					delay(rampdelay);
 				}
 			}
 			//abrampen
-			if (pwmfactor_beginn < pwmfactor_end)
+			else if (pwmfactor_beginn < pwmfactor_end)
 			{
+				digitalWrite(pin::dir1[wheelnumber], HIGH);
+				digitalWrite(pin::dir2[wheelnumber], LOW);
 				for (int16_t i = -pwmfactor_beginn; i >= -pwmfactor_end; i--)
 				{
-					digitalWrite(pin::dir1[wheelnumber], HIGH);
-					digitalWrite(pin::dir2[wheelnumber], LOW);
 					analogWrite(pin::pwm[wheelnumber], i);
 					delay(rampdelay);
 				}
 			}
+			else{}
 		}
 		else{}
 	}
-	else{}
+	else {}
 }
 
 
@@ -269,7 +268,6 @@ void getcurrent(int8_t wheelnumber)
 {
 
 }
-
 
 
 void loop()
