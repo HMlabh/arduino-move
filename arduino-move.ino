@@ -9,8 +9,12 @@
 
 //Weiterführung ab April 2017 : Markus Gutekunst
 
+#include <mcp_can.h>
+#include <SPI.h>
 
+MCP_CAN CAN0(53);
 
+byte data[8] = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07 };
 
 namespace pin
 {
@@ -111,7 +115,11 @@ void setup()
 
 	}
 
+	CAN0.begin(MCP_ANY, CAN_500KBPS, MCP_16MHZ);
+	delay(100);
+	CAN0.setMode(MCP_NORMAL);
 
+	
 }
 
 //-------Funktionen-------
@@ -127,12 +135,15 @@ void testit()
 	
 	while (1)
 	{
-		setramp(1, 20, 255, 5);
-		delay(1000);
-		setramp(1, 255, 20, 5);
+		
+		byte sndStat = CAN0.sendMsgBuf(0x100, 0, 8, data);
 
-		setramp(1, -20, -255, 5);
-		setramp(1, -255, -20, 5);
+		setramp(0, 20, 255, 5);
+		delay(1000);
+		setramp(0, 255, 20, 5);
+
+		setramp(0, -20, -255, 5);
+		setramp(0, -255, -20, 5);
 		
 		
 		delay(1000);
