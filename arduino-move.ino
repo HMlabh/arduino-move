@@ -12,9 +12,6 @@
 #include <mcp_can.h>
 #include <SPI.h>
 
-MCP_CAN CAN0(53);
-
-byte data[8] = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07 };
 
 namespace pin
 {
@@ -80,8 +77,40 @@ namespace pin
 	uint8_t dir2[8] =		{	m0_in2,	m1_in2,	m2_in2,	m3_in2,	m4_in2,	m5_in2,	m6_in2,	m7_in2 };
 	uint8_t dir1[8] =		{	m0_in1,	m1_in1,	m2_in1,	m3_in1,	m4_in1,	m5_in1,	m6_in1,	m7_in1 };
 
+
+	//CAN
+	uint8_t can_int = 19;	//Interrupt pin
+	uint8_t can_cs = 53;		//Chipselect pin
+
 }
 
+//---------------------CAN ----------------------------------
+MCP_CAN CAN0(pin::can_cs);//CS-Pin des CAN-Moduls
+byte can_send_msg[8] = {0};
+byte can_read_msg[8] = {0};
+long unsigned int can_read_id;
+unsigned char can_read_length = 0;
+long unsigned int can_send_id;
+unsigned char can_send_length = 0;
+
+//IDs:
+long unsigned int can_id_command = 0x40;
+long unsigned int can_id_response = 0x41;
+
+//commands
+byte can_com_stop = 0;			//
+byte can_com_setspeed_mt01 = 1;//
+
+byte can_com_test = 255;		//
+
+//responses
+byte can_res_status1 = 1;		//sendet Status von Motor 0 bis 3
+byte can_res_status2 = 2;		//sendet Status von Motor 4 bis 7
+byte can_res_current1 = 11;		//sendet Strom von Motor 0 bis 3
+byte can_res_current2 = 12;		//sendet Strom von Motor 4 bis 7
+
+
+//sonstigte 
 uint8_t status[8] = { 0 };
 
 
@@ -115,6 +144,9 @@ void setup()
 
 	}
 
+	pinMode(pin::can_int, INPUT);// Configuring pin for /INT input
+
+
 	CAN0.begin(MCP_ANY, CAN_500KBPS, MCP_16MHZ);
 	delay(100);
 	CAN0.setMode(MCP_NORMAL);
@@ -125,30 +157,37 @@ void setup()
 //-------Funktionen-------
 void testit()
 {
+
+	//reply message 
+	can_send_length = can_read_length;
+	for (int i = 0; i < can_read_length; i++)
+	{
+		can_send_msg[i] = can_read_msg[i] + 1;
+	}
+	CAN0.sendMsgBuf(0x21, 0, can_send_length, can_send_msg);
+
 	//Aktiviere alle Treiber
 	for (int i = 0; i <= 3; i++)
 	{
 		enabledriver(i);
 	}
 	
-	int test = 0;
-	
-	while (1)
-	{
-		
-		byte sndStat = CAN0.sendMsgBuf(0x100, 0, 8, data);
+	sendstatus();
+	sendcurrent();
+	setramp(0, 20, 255, 5);
+	sendstatus();
+	sendcurrent();
+	delay(1000);
+	setramp(0, 255, 20, 5);
 
-		setramp(0, 20, 255, 5);
-		delay(1000);
-		setramp(0, 255, 20, 5);
+	sendstatus();
+	setramp(0, -20, -255, 5);
+	sendstatus();
+	delay(1000);
+	setramp(0, -255, -20, 5);
+	delay(1000);
 
-		setramp(0, -20, -255, 5);
-		setramp(0, -255, -20, 5);
-		
-		
-		delay(1000);
-		
-	}
+	stopall();
 	
 
 	
@@ -158,7 +197,12 @@ void testit()
 //stopall
 void stopall()
 {
-	
+	for (int i = 0; i <= 7; i++)
+	{
+		digitalWrite(pin::dir1[i], LOW);
+		digitalWrite(pin::dir2[i], LOW);
+		analogWrite(pin::pwm[i], 0);
+	}
 }
 
 //set speed of a mecanum wheel
@@ -268,23 +312,98 @@ void enabledriver(int8_t driver)
 	else{}
 }
 
-//getstatus
-void getstatus(int8_t wheelnumber)
+void cansend()
 {
-
+	CAN0.sendMsgBuf(can_send_id, 0, can_send_length, can_send_msg);
 }
 
-//getcurrent
-void getcurrent(int8_t wheelnumber)
+//sendstatus
+void sendstatus()
 {
+	//erste Status Nachticht (Motor 0 bis 3)
+	can_send_id = can_id_response;
+	can_send_length = 5;
+	can_send_msg[0] = can_res_status1;
 
+	can_send_msg[1] = digitalRead(pin::m0_sf);
+	can_send_msg[2] = digitalRead(pin::m1_sf);
+	can_send_msg[3] = digitalRead(pin::m2_sf);
+	can_send_msg[4] = digitalRead(pin::m3_sf);
+	cansend();//sende erste nachricht
+
+	//zweite Status Nachticht (Motor 4 bis 7)
+	can_send_msg[0] = can_res_status2;
+
+	can_send_msg[1] = digitalRead(pin::m4_sf);
+	can_send_msg[2] = digitalRead(pin::m5_sf);
+	can_send_msg[3] = digitalRead(pin::m6_sf);
+	can_send_msg[4] = digitalRead(pin::m7_sf);
+	cansend();//sende zweite nachricht
+}
+
+//sendcurrent
+void sendcurrent()
+{
+	//erste Status Nachticht (Motor 0 bis 3)
+	can_send_id = can_id_response;
+	can_send_length = 5;
+	can_send_msg[0] = can_res_current1;
+
+	can_send_msg[1] = analogRead(pin::m0_fb) / 4;
+	can_send_msg[2] = analogRead(pin::m1_fb) / 4;
+	can_send_msg[3] = analogRead(pin::m2_fb) / 4;
+	can_send_msg[4] = analogRead(pin::m3_fb) / 4;
+	cansend();//sende erste nachricht
+
+	//zweite Status Nachticht (Motor 4 bis 7)
+	can_send_msg[0] = can_res_current2;
+
+	can_send_msg[1] = analogRead(pin::m4_fb) / 4;
+	can_send_msg[2] = analogRead(pin::m5_fb) / 4;
+	can_send_msg[3] = analogRead(pin::m6_fb) / 4;
+	can_send_msg[4] = analogRead(pin::m7_fb) / 4;
+	cansend();//sende zweite nachricht
 }
 
 
 void loop()
 {
 
-	testit();
+	
 
+	if (!digitalRead(pin::can_int))// If CAN0_INT pin is low, read receive buffer
+	{
+		CAN0.readMsgBuf(&can_read_id, &can_read_length, can_read_msg);// Read data: len = data length, buf = data byte(s)
+
+		//ID = 40?
+		if (can_read_id == 0x40)
+		{
+
+			if (can_read_msg[0] == can_com_stop)
+			{
+				stopall();
+			}
+			
+
+			else if (can_read_msg[0] == can_com_setspeed_mt01)
+			{
+				enabledriver(0);
+
+				setspeed(0, ((int16_t)(can_read_msg[1]) << 8) | (int16_t)(can_read_msg[2]));
+				setspeed(1, ((int16_t)(can_read_msg[3]) << 8) | (int16_t)(can_read_msg[4]));
+			}
+
+
+			else if (can_read_msg[0] == can_com_test)
+			{
+				testit();
+			}
+
+
+			else {};
+		}
+		else{}
+
+	}
 
 }
