@@ -94,8 +94,8 @@ long unsigned int can_send_id;
 unsigned char can_send_length = 0;
 
 //IDs:
-long unsigned int can_id_command = 0x40;
-long unsigned int can_id_response = 0x41;
+long unsigned int can_id_command = 0x040;
+long unsigned int can_id_response = 0x041;
 
 //commands
 byte can_com_stop = 0;			//
@@ -413,7 +413,7 @@ void loop()
 		CAN0.readMsgBuf(&can_read_id, &can_read_length, can_read_msg);// Read data: len = data length, buf = data byte(s)
 
 		//ID = 40?
-		if (can_read_id == 0x40)
+		if (can_read_id == can_id_command)
 		{
 			//Befehl : STOP
 			if (can_read_msg[0] == can_com_stop)
