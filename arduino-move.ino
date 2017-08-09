@@ -99,19 +99,43 @@ long unsigned int can_id_response = 0x41;
 
 //commands
 byte can_com_stop = 0;			//
-byte can_com_setspeed_mt01 = 1;//
+byte can_com_setspeed_mt01 = 1;	//
+byte can_com_setspeed_mt23 = 2;	//
+byte can_com_setspeed_mt45 = 3;	//
+byte can_com_setspeed_mt67 = 4;	//
 
-byte can_com_test = 255;		//
+byte can_com_ping = 10;			//
+byte can_com_ack_on = 11;		//
+byte can_com_ack_off = 12;		//
+byte can_com_ramp_on = 13;		//
+byte can_com_ramp_off = 14;		//
+
+byte can_com_set_rampdelay = 21;		//
+
+byte can_com_get_status = 30;	//
+byte can_com_get_current = 31;	//
+
+byte can_com_selftest = 0;		//
+
+byte can_com_test = 255;			//
 
 //responses
+byte can_res_error = 0;			//
+
 byte can_res_status1 = 1;		//sendet Status von Motor 0 bis 3
 byte can_res_status2 = 2;		//sendet Status von Motor 4 bis 7
 byte can_res_current1 = 11;		//sendet Strom von Motor 0 bis 3
 byte can_res_current2 = 12;		//sendet Strom von Motor 4 bis 7
 
+byte can_res_ack = 255;			//
+
 
 //sonstigte 
 uint8_t status[8] = { 0 };
+int8_t enableack = 0;
+int8_t enableramp = 0;
+int8_t error = 0;
+int16_t rampdelay = 20;
 
 
 void setup()
@@ -365,6 +389,19 @@ void sendcurrent()
 	cansend();//sende zweite nachricht
 }
 
+void sendack()
+{
+	can_send_id = can_id_response;
+	can_send_length = 1;
+	can_send_msg[0] = can_res_ack;
+	cansend();
+}
+
+void selftest()
+{
+	//TODO
+	delay(10);
+}
 
 void loop()
 {
@@ -378,22 +415,121 @@ void loop()
 		//ID = 40?
 		if (can_read_id == 0x40)
 		{
-
+			//Befehl : STOP
 			if (can_read_msg[0] == can_com_stop)
 			{
+				if (enableack) sendack();
 				stopall();
 			}
 			
-
+			//Befehl : Steppe Motorgeschwindigkeit Motor 0 und 1
 			else if (can_read_msg[0] == can_com_setspeed_mt01)
 			{
+				if (enableack) sendack();
 				enabledriver(0);
 
 				setspeed(0, ((int16_t)(can_read_msg[1]) << 8) | (int16_t)(can_read_msg[2]));
 				setspeed(1, ((int16_t)(can_read_msg[3]) << 8) | (int16_t)(can_read_msg[4]));
 			}
 
+			//Befehl : Steppe Motorgeschwindigkeit Motor 2 und 3
+			else if (can_read_msg[0] == can_com_setspeed_mt23)
+			{
+				if (enableack) sendack();
+				enabledriver(1);
 
+				setspeed(2, ((int16_t)(can_read_msg[1]) << 8) | (int16_t)(can_read_msg[2]));
+				setspeed(3, ((int16_t)(can_read_msg[3]) << 8) | (int16_t)(can_read_msg[4]));
+			}
+
+			//Befehl : Steppe Motorgeschwindigkeit Motor 4 und 5
+			else if (can_read_msg[0] == can_com_setspeed_mt45)
+			{
+				if (enableack) sendack();
+				enabledriver(2);
+
+				setspeed(4, ((int16_t)(can_read_msg[1]) << 8) | (int16_t)(can_read_msg[2]));
+				setspeed(5, ((int16_t)(can_read_msg[3]) << 8) | (int16_t)(can_read_msg[4]));
+			}
+
+			//Befehl : Steppe Motorgeschwindigkeit Motor 6 und 7
+			else if (can_read_msg[0] == can_com_setspeed_mt67)
+			{
+				if (enableack) sendack();
+				enabledriver(3);
+
+				setspeed(6, ((int16_t)(can_read_msg[1]) << 8) | (int16_t)(can_read_msg[2]));
+				setspeed(7, ((int16_t)(can_read_msg[3]) << 8) | (int16_t)(can_read_msg[4]));
+			}
+
+			//Befehl : Ping (Anfrage nach einzelnem Ack)
+			else if (can_read_msg[0] == can_com_ping)
+			{
+				sendack();
+			}
+
+			//Befehl : Ping (Anfrage nach einzelnem Ack)
+			else if (can_read_msg[0] == can_com_ping)
+			{
+				sendack();
+			}
+
+			//Befehl : Ack on
+			else if (can_read_msg[0] == can_com_ack_on)
+			{
+				sendack();
+				enableack = 1;
+			}
+
+			//Befehl : Ack off
+			else if (can_read_msg[0] == can_com_ack_off)
+			{
+				sendack();
+				enableack = 0;
+			}
+
+			//Befehl : Ramp on
+			else if (can_read_msg[0] == can_com_ramp_on	)
+			{
+				if (enableack) sendack();
+				enableramp = 1;
+			}
+
+			//Befehl : Ramp off
+			else if (can_read_msg[0] == can_com_ramp_off)
+			{
+				if (enableack) sendack();
+				enableramp = 0;
+			}
+
+			//Befehl : Set Rampdelay
+			else if (can_read_msg[0] == can_com_set_rampdelay)
+			{
+				if (enableack) sendack();
+				rampdelay = ((int16_t)(can_read_msg[1]) << 8) | (int16_t)(can_read_msg[2]);
+			}
+
+			//Befehl : Get status
+			else if (can_read_msg[0] == can_com_get_status)
+			{
+				sendstatus();
+			}
+
+			//Befehl : Get current
+			else if (can_read_msg[0] == can_com_get_current)
+			{
+				sendcurrent();
+			}
+
+			//Befehl : Selftest
+			else if (can_read_msg[0] == can_com_get_current)
+			{
+				if (enableack) sendack();
+				selftest();
+			}
+
+
+			//Befehl : Test
 			else if (can_read_msg[0] == can_com_test)
 			{
 				testit();
